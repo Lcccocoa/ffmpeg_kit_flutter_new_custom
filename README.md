@@ -1,149 +1,75 @@
-# FFmpegKit Android/iOS 自定义构建步骤
+# ffmpeg_kit_flutter_new_custom
 
-官方仓库：<https://github.com/arthenica/ffmpeg-kit>
+[![GitHub stars](https://img.shields.io/github/stars/Lcccocoa/ffmpeg_kit_flutter_new_custom.svg?style=social)](https://github.com/Lcccocoa/ffmpeg_kit_flutter_new_custom/stargazers)
 
-注意：`ffmpeg-kit` 官方已 retired，但源码里的 `android.sh` / `ios.sh` 构建脚本仍可用。
+自定义构建 FFmpeg for Flutter，打造属于你的多媒体处理工具箱！  
+Custom build of FFmpeg for Flutter — Create your ultimate multimedia toolkit!
 
-## 1. 进入源码目录
+---
 
-如果已经按当前项目结构拉好了源码：
+## 项目简介 Project Overview
 
-```bash
-cd ./ffmpeg-kit
-```
+本项目专注于如何在 Flutter 应用中集成并自定义构建 FFmpeg，实现音视频编解码、处理等高级功能，兼顾性能与体积优化。
 
-如果还没有源码：
+This repository documents the detailed steps for custom building FFmpeg for Flutter, enabling tailored audio/video processing in your apps with optimized performance and minimal binary size.
 
-```bash
-mkdir -p ./build-ffmpeg
-cd ./build-ffmpeg
-git clone https://github.com/arthenica/ffmpeg-kit.git ffmpeg-kit
-cd ffmpeg-kit
-```
+---
 
-## 2. 安装依赖
+## 为什么选择本项目？Why Choose This Project?
 
-```bash
-brew install automake libtool nasm yasm cmake meson ninja ragel gperf texinfo bison autogen wget doxygen groff gtk-doc libtasn1
-```
+- 🚀 深度定制：按需剔除无用编解码器，精简体积。
+- 🧩 原生集成：覆盖 Android/iOS 平台，兼容主流 Flutter 项目。
 
-安装 ffmpeg-kit 模板使用的 Android NDK 版本：
+---
 
-```bash
-/Users/luis/Library/Android/sdk/cmdline-tools/latest/bin/sdkmanager --install "ndk;22.1.7171670"
-```
+## 适用场景 Use Cases
 
-## 3. Android 构建
+- 多媒体App（视频播放、短视频、直播等）需要高定制的解码能力；
+- 对 Flutter 集成原生能力要求较高的开发者/团队；
+- 关注整包体积、运行性能优化的项目；
+- 需要跨平台移动端一致体验的音视频处理方案。
 
-设置环境变量：
+---
 
-```bash
-export ANDROID_SDK_ROOT=/Users/luis/Library/Android/sdk
-export ANDROID_HOME=/Users/luis/Library/Android/sdk
-export ANDROID_NDK_ROOT=/Users/luis/Library/Android/sdk/ndk/22.1.7171670
-export JAVA_HOME=$(/usr/libexec/java_home -v 17)
-```
+## 快速开始 Quick Start
 
-SPK App 定制包：只构建 `arm64-v8a`，启用字幕烧录、MP3、H.264：
+1. 克隆项目 Clone this repo:
+   ```bash
+   git clone https://github.com/Lcccocoa/ffmpeg_kit_flutter_new_custom.git
+   ```
 
-```bash
-./android.sh \
-  --disable-arm-v7a-neon \
-  --disable-x86 \
-  --disable-x86-64 \
-  --enable-gpl \
-  --enable-x264 \
-  --enable-lame \
-  --enable-libass
-```
+2. 按照 [`docs/BUILD_GUIDE.md`](docs/BUILD_GUIDE.md) 指南完成环境配置和构建（详细步骤敬请查阅文档）。
 
-说明：`--enable-libass` 会自动拉起 `freetype`、`fontconfig`、`fribidi`、`harfbuzz` 等字幕/字体依赖。`ffmpeg-kit` 的 Android 构建脚本默认会给 FFmpeg configure 添加 `--enable-small`；不要把 `--enable-small` 直接传给 `android.sh`，否则会被当成外部库名解析。
+3. 在 Flutter 项目中集成生成的 FFmpeg 库。
 
-Android 产物：
+> Tip：如遇到依赖安装、脚本执行等问题，请先查阅 [常见问题](#常见问题与支持) 或提交 Issue。
 
-```bash
-prebuilt/bundle-android-aar/ffmpeg-kit.aar
-```
+## 常见问题与支持 FAQ & Support
 
-## 4. iOS 构建
+- [ ] 如何选择所需编解码器？
+- [ ] Android/iOS 平台差异点有哪些？
+- [ ] 构建失败的排查方法？
 
-构建 `arm64` 真机 + `arm64-simulator`，输出 xcframework：
+> 更多问题欢迎通过 [Issues](https://github.com/Lcccocoa/ffmpeg_kit_flutter_new_custom/issues) 向我们反馈！
 
-```bash
-./ios.sh \
-  --xcframework \
-  --disable-armv7 \
-  --disable-armv7s \
-  --disable-i386 \
-  --disable-x86-64 \
-  --disable-arm64e \
-  --disable-arm64-mac-catalyst \
-  --disable-x86-64-mac-catalyst
-```
+---
 
-iOS 产物：
+## 如何贡献 Contributing
 
-```bash
-prebuilt/bundle-apple-xcframework-ios/
-```
+欢迎提交 PR、提 Issue 给出建议！  
+We welcome your contributions — Pull Requests, Issues, and Suggestions are appreciated!
 
-## 5. 常用自定义库参数
+1. Fork 项目，创建独立分支
+2. 编写/修改代码、文档
+3. 提交 Pull Request
 
-HTTPS/OpenSSL：
+---
 
-```bash
---enable-openssl
-```
+## License
 
-音频常用：
+MIT License
 
-```bash
---enable-opus --enable-lame
-```
+---
 
-ASS 字幕：
-
-```bash
---enable-libass --enable-fontconfig --enable-freetype --enable-fribidi
-```
-
-x264 / x265：
-
-```bash
---enable-gpl --enable-x264 --enable-x265
-```
-
-注意：启用 `x264` / `x265` / `libvidstab` / `rubberband` / `xvidcore` 这类 GPL 库后，产物会变成 GPLv3。
-
-## 6. 示例：Android arm64 + HTTPS + opus
-
-```bash
-export ANDROID_SDK_ROOT=/Users/luis/Library/Android/sdk
-export ANDROID_NDK_ROOT=/Users/luis/Library/Android/sdk/ndk/22.1.7171670
-
-./android.sh \
-  --disable-arm-v7a \
-  --disable-arm-v7a-neon \
-  --disable-x86 \
-  --disable-x86-64 \
-  --enable-openssl \
-  --enable-opus
-```
-
-## 7. 查看日志
-
-构建过程大部分详细输出会写入：
-
-```bash
-build.log
-```
-
-实时查看：
-
-```bash
-tail -f build.log
-```
-
-## 8. 使用自定义的二进制
-
-下载：https://pub-web.flutter-io.cn/packages/ffmpeg_kit_flutter_new的包， 把网络依赖改为本地依赖，指定为自己构建的aar。
+如果你觉得项目有用，请 Star 支持，谢谢！  
+If you like this project, please star it!
