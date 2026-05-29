@@ -9,13 +9,14 @@
 如果已经按当前项目结构拉好了源码：
 
 ```bash
-cd /Users/luis/Desktop/build-ffmpeg/ffmpeg-kit
+cd ./ffmpeg-kit
 ```
 
 如果还没有源码：
 
 ```bash
-cd /Users/luis/Desktop/build-ffmpeg
+mkdir -p ./build-ffmpeg
+cd ./build-ffmpeg
 git clone https://github.com/arthenica/ffmpeg-kit.git ffmpeg-kit
 cd ffmpeg-kit
 ```
@@ -142,3 +143,7 @@ build.log
 ```bash
 tail -f build.log
 ```
+
+## 8. 使用自定义的二进制
+
+下载：https://pub-web.flutter-io.cn/packages/ffmpeg_kit_flutter_new的包， 把网络依赖改为本地依赖，指定为自己构建的aar。
